@@ -57,6 +57,9 @@ namespace daw {
 	struct http_version {
 		uint_fast8_t ver_minor;
 		uint_fast8_t ver_major;
+		constexpr double full( ) const noexcept {
+			return static_cast<double>(ver_major) + (static_cast<double>(ver_minor)/10.0);
+		}
 	};
 
 	struct http_request {
