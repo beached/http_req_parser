@@ -26,16 +26,13 @@
 
 #include "http_req_parser.h"
 
-constexpr daw::http_request test_func( daw::string_view str ) {
-	return daw::construct_from<daw::http_request, daw::request_method, daw::unquoted_string_view, daw::http_version>(
-	  std::move( str ), daw::parser::single_whitespace_splitter{} );
-}
-
 int main( int, char **argv ) {
-	constexpr daw::http_request req{test_func( "GET http://www.google.ca/ HTTP/1.1" )};
+	constexpr daw::http_request req {
+		daw::construct_from<daw::http_request, daw::request_method, daw::unquoted_string_view, daw::http_version>(
+		  "GET http://www.google.ca/ HTTP/1.1", daw::parser::single_whitespace_splitter{} ) };
 
-	std::cout << to_string( req.method ) << " " << req.uri << " HTTP/" << static_cast<int>( req.version.ver_major ) << '.'
-	          << static_cast<int>( req.version.ver_minor ) << '\n';
-	return EXIT_SUCCESS;
+		std::cout << to_string( req.method ) << " " << req.uri << " HTTP/" << static_cast<int>( req.version.ver_major )
+		          << '.' << static_cast<int>( req.version.ver_minor ) << '\n';
+		return EXIT_SUCCESS;
 }
 
