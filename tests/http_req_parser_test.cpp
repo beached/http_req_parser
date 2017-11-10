@@ -32,9 +32,9 @@ constexpr daw::http_request test_func( daw::string_view str ) {
 }
 
 int main( int, char **argv ) {
-	daw::http_request req{test_func( "GET http://www.google.ca/ HTTP/1.1" )};
+	constexpr daw::http_request req{test_func( "GET http://www.google.ca/ HTTP/1.1" )};
 
-	std::cout << to_string( req.method ) << " " << req.uri << " HTTP/" << static_cast<int>( req.version.ver_major )
+	std::cout << to_string( req.method ) << " " << req.uri << " HTTP/" << static_cast<int>( req.version.ver_major ) << '.'
 	          << static_cast<int>( req.version.ver_minor ) << '\n';
 	return EXIT_SUCCESS;
 }
