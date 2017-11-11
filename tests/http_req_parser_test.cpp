@@ -26,14 +26,19 @@
 
 #include "http_req_parser.h"
 
-int main( int, char **argv ) {
-	constexpr daw::http_request req {
-		daw::construct_from<daw::http_request, daw::request_method, daw::http_uri, daw::http_version>(
-		  "GET http://www.google.ca/ HTTP/1.1", daw::parser::single_whitespace_splitter{} ) };
-		static_assert( req.version.full( ) == 1.1, "Only HTTP1.1 supported" ); 
+constexpr daw::http_request parse_request( daw::string_view str ) {
+	return daw::http_request{
+	  daw::construct_from<daw::http_request, daw::request_method, daw::http_uri, daw::http_version>(
+	    str, daw::parser::single_whitespace_splitter{} )};
+}
 
-		std::cout << to_string( req.method ) << " " << req.uri.host << " HTTP/" << static_cast<int>( req.version.ver_major )
-		          << '.' << static_cast<int>( req.version.ver_minor ) << '\n';
-		return EXIT_SUCCESS;
+int main( int, char **argv ){
+	//constexpr auto req = parse_request( "GET https://www.google.ca:443/ HTTP/1.1" );
+	constexpr auto req = parse_request( "GET / HTTP/1.1" );
+
+	static_assert( req.version.full( ) == 1.1, "Only HTTP1.1 supported" );
+	std::cout << to_string( req.method ) << " " << req.uri.host << req.uri.path << " HTTP/"
+	          << static_cast<int>( req.version.ver_major ) << '.' << static_cast<int>( req.version.ver_minor ) << '\n';
+	return EXIT_SUCCESS;
 }
 

@@ -148,7 +148,7 @@ namespace daw {
 		constexpr http_request( http_request &&other ) noexcept
 		  : method{std::move( other.method )}, uri{std::move( other.uri )}, version{std::move( other.version )} {}
 
-		constexpr http_request &operator=( http_request const & rhs ) noexcept {
+		constexpr http_request &operator=( http_request const &rhs ) noexcept {
 			if( this != &rhs ) {
 				method = rhs.method;
 				uri = rhs.uri;
@@ -254,10 +254,15 @@ namespace daw {
 	}
 
 	namespace impl {
-		constexpr daw::string_view parse_scheme( daw::string_view &str ) {
+		constexpr daw::string_view parse_scheme( daw::string_view &str, bool req ) {
 			auto const scheme_end = str.find( "://" );
 			if( scheme_end == str.npos ) {
-				throw daw::parser::invalid_input_exception{};
+				if( !req ) {
+					return daw::string_view{};
+				}
+				struct invalid_uri_scheme {};
+				// Uri does not have a :// in it
+				throw invalid_uri_scheme{};
 			}
 			auto result = str.substr( 0, scheme_end );
 			str.remove_prefix( scheme_end + 3 );
@@ -278,8 +283,11 @@ namespace daw {
 			daw::string_view hostname;
 			uint16_t port;
 		};
-		constexpr daw::string_view parse_hostname( daw::string_view &str ) {
+		constexpr daw::string_view parse_hostname( daw::string_view &str, bool req ) {
 			if( str.size( ) < 3 ) {
+				if( !req && !str.empty( ) ) {
+					return daw::string_view{};
+				}
 				throw daw::parser::invalid_input_exception{};
 			}
 			auto host_end = str.find( ':' );
@@ -307,13 +315,16 @@ namespace daw {
 			return port;
 		}
 
-		constexpr hostinfo_t parse_hostinfo( daw::string_view &str ) {
-			hostinfo_t result{parse_hostname( str ), 80};
+		constexpr hostinfo_t parse_hostinfo( daw::string_view &str, bool req ) {
+			hostinfo_t result{parse_hostname( str, req ), 80};
 			result.port = parse_port( str );
 			return result;
 		}
 
 		constexpr daw::string_view parse_path( daw::string_view &str ) {
+			if( str.empty( ) ) {
+				return str;
+			}
 			if( str.size( ) < 1 ) {
 				throw daw::parser::invalid_input_exception{};
 			}
@@ -341,9 +352,9 @@ namespace daw {
 	} // namespace impl
 
 	constexpr http_uri parse_to_value( daw::string_view str, http_uri ) {
-		auto scheme = impl::parse_scheme( str );
+		auto scheme = impl::parse_scheme( str, false );
 		auto auth_info = impl::parse_auth_info( str );
-		auto host_info = impl::parse_hostinfo( str );
+		auto host_info = impl::parse_hostinfo( str, false );
 		auto path = impl::parse_path( str );
 		auto query = impl::parse_query( str );
 		return http_uri{std::move( scheme ), std::move( auth_info ), std::move( host_info.hostname ),
