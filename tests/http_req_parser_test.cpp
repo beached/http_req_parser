@@ -28,10 +28,10 @@
 
 int main( int, char **argv ) {
 	constexpr daw::http_request req {
-		daw::construct_from<daw::http_request, daw::request_method, daw::unquoted_string_view, daw::http_version>(
+		daw::construct_from<daw::http_request, daw::request_method, daw::http_uri, daw::http_version>(
 		  "GET http://www.google.ca/ HTTP/1.1", daw::parser::single_whitespace_splitter{} ) };
 		static_assert( req.version.full( ) == 1.1, "Only HTTP1.1 supported" ); 
-		std::cout << to_string( req.method ) << " " << req.uri << " HTTP/" << static_cast<int>( req.version.ver_major )
+		std::cout << to_string( req.method ) << " " << req.uri.host << " HTTP/" << static_cast<int>( req.version.ver_major )
 		          << '.' << static_cast<int>( req.version.ver_minor ) << '\n';
 		return EXIT_SUCCESS;
 }
