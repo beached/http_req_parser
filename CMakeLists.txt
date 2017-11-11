@@ -4,7 +4,8 @@ project( http_request_parser )
 
 include( ExternalProject )
 
-find_package( Boost 1.60.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
+#find_package( Boost 1.60.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
+find_package( Boost 1.60.0 COMPONENTS REQUIRED )
 
 enable_testing( )
 add_definitions( -DBOOST_ALL_NO_LIB )
