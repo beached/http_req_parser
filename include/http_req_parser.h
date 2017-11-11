@@ -354,7 +354,7 @@ namespace daw {
 	constexpr http_uri parse_to_value( daw::string_view str, http_uri ) {
 		auto scheme = impl::parse_scheme( str, false );
 		auto auth_info = impl::parse_auth_info( str );
-		auto host_info = impl::parse_hostinfo( str, false );
+		auto host_info = impl::parse_hostinfo( str, !scheme.empty( ) );
 		auto path = impl::parse_path( str );
 		auto query = impl::parse_query( str );
 		return http_uri{std::move( scheme ), std::move( auth_info ), std::move( host_info.hostname ),

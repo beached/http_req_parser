@@ -64,5 +64,5 @@ target_link_libraries( http_req_parser_test_bin ${Boost_LIBRARIES} ${CMAKE_THREA
 add_dependencies( http_req_parser_test_bin header_libraries_prj )
 add_test( http_req_parser_test http_req_parser_test_bin )
 
-install( DIRECTORY ${HEADER_FOLDER}/ DESTINATION include/daw/crypto )
+install( DIRECTORY ${HEADER_FOLDER}/ DESTINATION include/daw/http )
 
