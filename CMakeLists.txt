@@ -4,8 +4,7 @@ project( http_request_parser )
 
 include( ExternalProject )
 
-#find_package( Boost 1.60.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
-find_package( Boost 1.60.0 COMPONENTS REQUIRED )
+find_package( Boost 1.60.0 COMPONENTS system iostreams filesystem regex unit_test_framework REQUIRED )
 
 enable_testing( )
 add_definitions( -DBOOST_ALL_NO_LIB )
@@ -55,6 +54,7 @@ link_directories( ${Boost_LIBRARY_DIRS} )
 
 set( HEADER_FILES
 	${HEADER_FOLDER}/http_req_parser.h
+	${HEADER_FOLDER}/percent_decode_view.h  
 )
 
 add_definitions( -DBOOST_TEST_DYN_LINK -DBOOST_ALL_NO_LIB -DBOOST_ALL_DYN_LINK )
@@ -63,6 +63,11 @@ add_executable( http_req_parser_test_bin ${HEADER_FILES} ${TEST_FOLDER}/http_req
 target_link_libraries( http_req_parser_test_bin ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} )
 add_dependencies( http_req_parser_test_bin header_libraries_prj )
 add_test( http_req_parser_test http_req_parser_test_bin )
+
+add_executable( percent_decoding_iterator_test_bin EXCLUDE_FROM_ALL ${HEADER_FILES} ${TEST_FOLDER}/percent_decoding_iterator_test.cpp )
+target_link_libraries( percent_decoding_iterator_test_bin ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} )
+add_dependencies( percent_decoding_iterator_test_bin header_libraries_prj )
+add_test( percent_decoding_iterator_test percent_decoding_iterator_test_bin )
 
 install( DIRECTORY ${HEADER_FOLDER}/ DESTINATION include/daw/http )
 
